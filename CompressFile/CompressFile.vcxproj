@@ -127,7 +127,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Common_Functions.c" />
     <ClCompile Include="CompressFile.c" />
+    <ClCompile Include="decompress_LZW.c" />
+    <ClCompile Include="LZW.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common_Functions.h" />
+    <ClInclude Include="decompress_LZW.h" />
+    <ClInclude Include="LZW.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

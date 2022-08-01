@@ -18,5 +18,25 @@
     <ClCompile Include="CompressFile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LZW.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="decompress_LZW.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common_Functions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LZW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="decompress_LZW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common_Functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
