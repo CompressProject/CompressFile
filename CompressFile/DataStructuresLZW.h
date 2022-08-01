@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#pragma once
+>>>>>>> Data_Structures_LZW
 #include "CommonFunction.h"
 //represent the code table.
 typedef struct HashTable
