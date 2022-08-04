@@ -18,7 +18,7 @@ void init(HashTable* hashTable)
 }
 int hashCode(char* value)
 {
-	printf("hashCode value= %c", value);
+	//printf("hashCode value= %c", value);
 	long key;
 	const char* currentChar;
 	currentChar = (const char*)value;
@@ -30,44 +30,72 @@ int hashCode(char* value)
 		key = key * MULTIPLIER + *currentChar;
 		currentChar++;
 	}
+	if (key < 0)
+		key *= -1;
 	key = key % SIZE_TABLE;
 	if (key < 256)
 		key += 256;
 	return key;
 }
-void insert(HashTable* hashTable, char* value)
-{
-	if (hashTable->size > SIZE_TABLE - 1)
+void insert(HashTable* hashTable, char* value) {
+	if (hashTable->size == SIZE_TABLE)
 		return;
-	//calculate hash key.
-	int key = hashCode(value);
-	//check if hashTable->CodeTable[key] is full and increase the key until arrived to empty place.
-	while (hashTable->CodeTable[key])
-	{
-		key++;
-		key %= SIZE_TABLE;
-	}
-	//insert the value to the table.
-	hashTable->CodeTable[key] = value;
+	hashTable->CodeTable[hashTable->size] = value;
 	hashTable->size++;
 }
-int find(HashTable* hashTable, char* value)
-{
-	printf("find value= %c", value);
-	//calculate hash key.
-	int hashIndex = hashCode(value), firstKey = hashIndex;
-	// Find the value with given key .
-	while (hashTable->CodeTable[hashIndex] != NULL && strcmp(hashTable->CodeTable[hashIndex], value) != 0)
-	{
-		hashIndex++;
-		hashIndex %= SIZE_TABLE;
-		if (firstKey == hashIndex)
-			return -1;
+int find(HashTable* hashTable, char* value) {
+	//if value is a single char
+	if (value[1] == '\0')
+		return value[0];
+	//if value is a string
+	for (int i = 256; i < hashTable->size; i++) {
+		if (strcmp(hashTable->CodeTable[i], value) == 0)
+			return i;
 	}
-	//if  found return hashIndex.
-	if (hashTable->CodeTable[hashIndex] != NULL && strcmp(hashTable->CodeTable[hashIndex], value) == 0)
-		return hashIndex;
-	// If not found return -1.
 	return -1;
+}
+//insert & find implemented by hash
+
+//void insert(HashTable* hashTable, char* value)
+//{
+//	if (hashTable->size > SIZE_TABLE - 1)
+//		return;
+//	//calculate hash key.
+//	int key = hashCode(value);
+//	//check if hashTable->CodeTable[key] is full and increase the key until arrived to empty place.
+//	while (hashTable->CodeTable[key])
+//	{
+//		key++;
+//		key %= SIZE_TABLE;
+//	}
+//	//insert the value to the table.
+//	hashTable->CodeTable[key] = value;
+//	hashTable->size++;
+//}
+//int find(HashTable* hashTable, char* value)
+//{
+//	//printf("find value= %c", value);
+//	//calculate hash key.
+//	int hashIndex = hashCode(value), firstKey = hashIndex;
+//	// Find the value with given key .
+//	while (hashTable->CodeTable[hashIndex] != NULL && strcmp(hashTable->CodeTable[hashIndex], value) != 0)
+//	{
+//		hashIndex++;
+//		hashIndex %= SIZE_TABLE;
+//		if (firstKey == hashIndex)
+//			return -1;
+//	}
+//	//if  found return hashIndex.
+//	if (hashTable->CodeTable[hashIndex] != NULL && strcmp(hashTable->CodeTable[hashIndex], value) == 0)
+//		return hashIndex;
+//	// If not found return -1.
+//	return -1;
+//}
+void print(HashTable* hashTable) {
+	printf("\n\n--------------------------------\n");
+	for (int i = 0; i < SIZE_TABLE; i++) {
+		printf("%4d  %8s\n", i, hashTable->CodeTable[i]);
+	}
+	printf("\n--------------------------------\n");
 }
 #pragma endregion

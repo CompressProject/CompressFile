@@ -18,42 +18,24 @@
     <ClCompile Include="CompressFile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LZW.c">
+    <ClCompile Include="DataStructuresLZW.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="decompress_LZW.c">
+    <ClCompile Include="CommonFunction.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Common_Functions.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Compress_Huffman.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Decompress_Huffman.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Huffman.c">
+    <ClCompile Include="LZW_Compress.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LZW.h">
+    <ClInclude Include="DataStructuresLZW.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="decompress_LZW.h">
+    <ClInclude Include="CommonFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common_Functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Compress_Huffman.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Decompress_Huffman.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Huffman.h">
+    <ClInclude Include="LZW_Compress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

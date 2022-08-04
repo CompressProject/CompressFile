@@ -127,21 +127,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Common_Functions.c" />
+    <ClCompile Include="CommonFunction.c" />
     <ClCompile Include="CompressFile.c" />
-    <ClCompile Include="Compress_Huffman.c" />
-    <ClCompile Include="Decompress_Huffman.cpp" />
-    <ClCompile Include="decompress_LZW.c" />
-    <ClCompile Include="Huffman.c" />
-    <ClCompile Include="LZW.c" />
+    <ClCompile Include="DataStructuresLZW.c" />
+    <ClCompile Include="LZW_Compress.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Common_Functions.h" />
-    <ClInclude Include="Compress_Huffman.h" />
-    <ClInclude Include="Decompress_Huffman.h" />
-    <ClInclude Include="decompress_LZW.h" />
-    <ClInclude Include="Huffman.h" />
-    <ClInclude Include="LZW.h" />
+    <ClInclude Include="CommonFunction.h" />
+    <ClInclude Include="DataStructuresLZW.h" />
+    <ClInclude Include="LZW_Compress.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

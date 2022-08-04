@@ -1,0 +1,163 @@
+
+Project Name Design Document
+
+
+Revision: 0.1
+Date: 14-Jul-22
+
+
+Authors:
+Hadasa huminer
+Tamar wolpo
+REVISION HISTORY
+Revision	Date	Summary of Changes	Author(s)
+Table of Contents
+Introduction
+1.1	Definitions, Acronyms & Abbrev
+1.2	Requirements
+Requirements:
+The developer will describe in the design document the possible algorithms to be implemented and explain why the implemented algorithm was chosen.
+The program is required to support:
+Compress the requested file.
+Decompress the file.
+Comparing the information and checking that there is no loss of information.
+Keeping a history of operations for logs and printing according to a predefined command.
+Print information while running that will allow future falls to be 
+2 High Level Design 
+2.1 Block Diagram  
+Compression process:
+Decompression process:
+2.2 High Level Flows
+Received file and decide if to compress or decompress.
+Compress:
+Create an intermediate file and open it for writing.
+Create new hash table with 4096 entries. The 256 first are Initialized with single chars. The table keeps sequence of strings that appear in the file and their short code.
+Read every char,
+write it's code into the intermediate file according the table. 
+fill the table with the sequence of strings that exists in the file.
+Closed the original file and open the intermediate file for reading.
+Set a code for each character according to how often it appears in the file.
+The codes are stored in a binary tree.
+Create a binary file, this is the compressed file.
+Read every char,
+write in the compressed file its code, according to the tree.
+Delete the intermediate file.
+Close the compressed file and save it with the tree.
+ Decompress:
+Create an intermediate file and open it for writing.
+Go through the compressed file, and translate it according to the tree. 
+Write the translation to the intermediate file.
+Closed the compressed file and open the intermediate file for reading.
+Create new hash table with 4096 entries The 256 first are Initialized with single chars. The table keeps sequence of strings that appear in the file and their short code.
+Create the decompressed file.
+Go through the intermediate file, and translate every code according to the table.
+Write it in the decompressed file. 
+Delete the intermediate file.
+Close the decompressed file.
+2.3 Assumptions
+2.4 Limitations of the suggested design.
+Detailed Design
+1.3	Detailed Description of flows.
+First of all, we need to know if to compress or decompress 
+and run the appropriate part of the system.
+Compress :
+Variables:
+Current=contains the current string.
+Next=contains the next char.
+CodeTable=hash table that stores sequences and their code.
+Code = contains code for specific character.
+CounterArray =contains the frequency of the characters' occurrences.
+NodeHeap = Data structure to generate the code for every character.
+Code description:
+Create intermediate file.
+Initialize CodeTable with single character strings.
+Initialize current to the first input character.
+Go through the loop on the file, In each iteration: 65
+next is initialized to the next character.    current=a next =b 
+check if current + next exist in the CodeTable.
+ if true so:
+add next to current. 
+and go through to next iteration. 
+if false so:
+Write in the compressed file the current 's code according to the CodeTable.
+Add to the CodeTable new sequence: current + next.
+Update current=next.
+Now continue to next part of the compression:
+Create new binary file for the completely compression.
+Initialize CounterArray according to the intermediate file.
+Initialize NodeHeap according to CounterArray.
+Go through the loop Until one NodeHeap stays in the heap, In each iteration:
+Extract two nodes with the minimum frequency from NodeHeap (extractmin).
+Create a new NodeHeap with an amount equal to the sum of the two 
+frequencies of the nodes.
+Create a new NodeTree that The first (small) node it is left son and the second node is the right son.
+NodeHeap ->tree = NodeTree;
+Add it to the NodeHeap instead of her two sons.
+Go through the tree starting from the root, using code variable.
+When reach the left child, chain to code 0 and when reach the right child,
+chain 1 until you reach a leaf,
+and then keep the character and the value of code in CounterArray.
+Go through the intermediate file ,for each character:
+write its code according to CounterArray in the compressed file.
+Save the tree for the decompression.
+Now the new binary file contains the compressed data.
+Decompress:
+Variables:
+previous=contains the previous code.
+current =contains the current code.
+translate =contains the Code translation.
+C=contains the first character of translate.
+CodeTable =hash table that stores sequences and their code.
+NodeTree =contains the characters.
+Code description:
+Create intermediate file.
+The following steps:
+Begin to go over the NodeTree from the root until you reach the leaf:
+	If the current bit is 0 we will move to the left node.
+	If the current bit is 1 we will move to a right node.
+	When you reach a leaf node, write the contents of the leaf to the intermediate file.
+   Node=root;
+Go back to the root and repeat the above steps until the end of the file.
+Now continue to next part of the decompression:
+Create new file for the completely decompression.
+Initialize CodeTable with single character strings.
+Initialize previous to the first input code.
+Go through the loop on the file, In each iteration:
+	the current is initialized to the next character.
+	now we want to translate the code.
+	check if current exists in the CodeTable.
+If true so: 
+translate =the translate of current according to the CodeTable.
+If false so:
+translate =the translate of previous according to the CodeTable + C.
+	Write in the intermediate file the value of translate.
+	Update the c to the first char of translate.
+	Add to the CodeTable new sequence: previous +c.
+	Update previous = current.
+Now the new file contains the decoded data.
+1.4	Flowcharts (when needed).
+1.5	Data structures.
+ 		Hash table:
+Struct HashTable {
+int code;
+char* value;
+}
+		Struct HashTable CodeTable[4096];
+		Binary tree:
+Struct TreeNode {
+char data;
+Struct TreeNode*left;
+Struct TreeNode* right;
+}
+		Minimum heap:
+Struct NodeHeap {
+Int frequency;
+	Struct NodeHeap *left;
+	Struct NodeHeap *right;
+	Struct NodeTree * tree;
+}
+1.6	Public APIs signatures.
+FILE  * compressFile(F  *compressF*originalF e);
+*o* c * de(FilecompressF*origi *compressed;
+** c 
+------------------------
