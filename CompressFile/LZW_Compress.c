@@ -1,14 +1,16 @@
 #include "LZW_Compress.h"
-void convertIntToBinary(FILE* binFile,int number) {
+void convertIntToBinary(FILE* binFile, int number) {
 	//FILE* binFile = fopen(binaryFilePath, "wb");
-	int binary;
+	//int binary;
+	bool binary;
 	int mask = 1;
-	mask <<= 12;
+	mask <<= LENGTH_CODE;
 	for (int i = 0; i < 12; i++) {
 		mask >>= 1;
-		binary = (number & mask) ? 1 : 0;
+		//binary = (number & mask) ? 1 : 0;
+		binary = number & mask;
 		fwrite(&binary, 1, 1, binFile);
-		printf("%d", binary);
+		printf("%i", binary);
 	}
 	printf("\n");
 	//fclose(binFile);
@@ -22,11 +24,22 @@ void readBinaryFile(char* binaryFilePath) {
 	}
 	fclose(binaryFile);
 }
+int combineTwoNumbers(codeChar, prevCodeChar)
+{
+	//101= 110 0101
+	//101<<12 = 110 0101 0000 0000 0000
+	// 68 =100 0100
+	//res= 110 0101 0000 0100 0100
+	//int combineNum= prevCodeChar;
+	codeChar <<= LENGTH_CODE;
+	return codeChar | prevCodeChar;
+}
+
 //compress the file using the lzw method.
 void compressLZW(char* compressionPath, char* resultPath)
 {
-	int res = 0;
-	int tempHash, lenTemp;
+	int res = 0, count = 0;
+	int codeChar,prevCodeChar, lenTemp, combineNum;
 	FILE* intermediateFile, * originalFile;
 	char* currentString = (char*)malloc(2 * sizeof(char)), * convert, * newSequence;
 	char nextCharacter = ' ', str[10];
@@ -62,21 +75,37 @@ void compressLZW(char* compressionPath, char* resultPath)
 		}
 		else
 		{
+			count++;
 			//printf("hashCode(currentString)= %d\n", hashCode(currentString));
 			//find hashcode of the currentString.
-			tempHash = find(codeTable, currentString);
-			convert = convertIntToChar(tempHash);
-			lenTemp = strlen(convert);
-			//generate any code in 4 digits.
-			lenTemp = 4 - lenTemp;
-			while (lenTemp < 4 && lenTemp != 0)
-			{
-				convert = appendFromBegin(convert, '0');
-				lenTemp--;
-			}
+			codeChar = find(codeTable, currentString);
+			//convert = convertIntToChar(tempHash);
+			//lenTemp = strlen(convert);
+			////generate any code in 4 digits.
+			//lenTemp = 4 - lenTemp;
+			//while (lenTemp < 4 && lenTemp != 0)
+			//{
+			//	convert = appendFromBegin(convert, '0');
+			//	lenTemp--;
+			//}
 			//write the code in the file.
-			 //arite tobinary file
-			convertIntToBinary(intermediateFile, tempHash);
+			 //write to binary file
+			//convertIntToBinary(intermediateFile, tempHash);
+			if (count == 2)
+			{//110 0101 0000 0100 0100
+			// res=110 0100 1001 1100 01
+				combineNum=combineTwoNumbers(codeChar,prevCodeChar);
+				printf("%d\n", combineNum);
+				fwrite(&combineNum, 3 * sizeof(char), 1, intermediateFile);
+				count = 0;
+			}
+			int temp;
+			/*fseek(intermediateFile, -1, SEEK_CUR);
+			fread(&temp, 3 * sizeof(char), 1, intermediateFile);
+			printf("read: %d\n", temp);*/
+			//fseek(intermediateFile,1, SEEK_CUR);
+			prevCodeChar = codeChar;
+			printf("0x%x\n", codeChar);
 			// write to text file.
 			//fputs(convert, intermediateFile);
 			//insert the new sequence into the table.
@@ -89,6 +118,7 @@ void compressLZW(char* compressionPath, char* resultPath)
 		nextCharacter = fgetc(originalFile);
 		//puts(currentString);
 	}
+	//readBinaryFile("C:\\γρι\\CompressFile\\CompressFile\\result.bin");
 	print(codeTable);
 	//close the files.
 	fclose(originalFile);
