@@ -1,68 +1,38 @@
 #include "DataStructuresLZW.h"
-void init(HashTable* hashTable)
+void init(CodeTable* CodeTable)
 {
-	hashTable->size = 256;
+	CodeTable->size = 256;
 	for (int i = 0; i < 256; i++)
 	{
 		char str[10] = { (char)i, "\0" };
-		hashTable->CodeTable[i] = _strdup(str);
+		CodeTable->CodeArray[i] = _strdup(str);
 	}
 	for (int i = 256; i < SIZE_TABLE; i++)
 	{
-		hashTable->CodeTable[i] = NULL;
+		CodeTable->CodeArray[i] = NULL;
 	}
 }
-int hashCode(char* value)
-{
-	printf("hashCode value= %c", value);
-	long key;
-	const char* currentChar;
-	currentChar = (const char*)value;
-	key = 1;
+void insert(CodeTable* CodeTable, char* value) {
+	if (CodeTable->size == SIZE_TABLE)
+		return;
+	CodeTable->CodeArray[CodeTable->size] = value;
+	CodeTable->size++;
+}
+int find(CodeTable* CodeTable, char* value) {
+	//if value is a single char
 	if (value[1] == '\0')
 		return value[0];
-	while (*currentChar != '\0')
-	{
-		key = key * MULTIPLIER + *currentChar;
-		currentChar++;
+	//if value is a string
+	for (int i = 0; i < CodeTable->size; i++) {
+		if (strcmp(CodeTable->CodeArray[i], value) == 0)
+			return i;
 	}
-	key = key % SIZE_TABLE;
-	if (key < 256)
-		key += 256;
-	return key;
-}
-void insert(HashTable* hashTable, char* value)
-{
-	if (hashTable->size > SIZE_TABLE - 1)
-		return;
-	//calculate hash key.
-	int key = hashCode(value);
-	//check if hashTable->CodeTable[key] is full and increase the key until arrived to empty place.
-	while (hashTable->CodeTable[key])
-	{
-		key++;
-		key %= SIZE_TABLE;
-	}
-	//insert the value to the table.
-	hashTable->CodeTable[key] = value;
-	hashTable->size++;
-}
-int find(HashTable* hashTable, char* value)
-{
-	printf("find value= %c", value);
-	//calculate hash key.
-	int hashIndex = hashCode(value), firstKey = hashIndex;
-	// Find the value with given key .
-	while (hashTable->CodeTable[hashIndex] != NULL && strcmp(hashTable->CodeTable[hashIndex], value) != 0)
-	{
-		hashIndex++;
-		hashIndex %= SIZE_TABLE;
-		if (firstKey == hashIndex)
-			return -1;
-	}
-	//if  found return hashIndex.
-	if (hashTable->CodeTable[hashIndex] != NULL && strcmp(hashTable->CodeTable[hashIndex], value) == 0)
-		return hashIndex;
-	// If not found return -1.
 	return -1;
+}
+void printTable(CodeTable* CodeTable) {
+	printf("\n\n--------------------------------\n");
+	for (int i = 0; i < SIZE_TABLE; i++) {
+		printf("%4x  %8s\n", i, CodeTable->CodeArray[i]);
+	}
+	printf("\n--------------------------------\n");
 }

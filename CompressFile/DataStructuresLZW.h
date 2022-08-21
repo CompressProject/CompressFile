@@ -1,20 +1,17 @@
-<<<<<<< HEAD
-=======
 #pragma once
->>>>>>> Data_Structures_LZW
 #include "CommonFunction.h"
 //represent the code table.
-typedef struct HashTable
+typedef struct CodeTable
 {
 	int size;
-	char* CodeTable[SIZE_TABLE];
-}HashTable;
+	char* CodeArray[SIZE_TABLE];
+}CodeTable;
 //Initialize the first 256 places according to their ASCII code.
-void init(HashTable*);
-//generate a code.
-int hashCode(char*);
+void init(CodeTable*);
 //insert new sequence to the hash table.
-void insert(HashTable*, char*);
+void insert(CodeTable*, char*);
 //Searches if the sequence exists in the table.
-int find(HashTable*, char*);
+int find(CodeTable*, char*);
+//print the table.
+void printTable(CodeTable* );
 
