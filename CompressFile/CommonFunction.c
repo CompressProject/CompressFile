@@ -15,8 +15,6 @@ char* append(char* string, char c) {
 	return concatenatedString;
 }
 char* appendFromBegin(char* string, char c) {
-	//printf("string= %c\n", string);
-	//puts(string);
 	int length = stringLength(string);
 	char* concatenatedString = (char*)malloc(length + 2);
 	concatenatedString[0] = c;
@@ -24,21 +22,17 @@ char* appendFromBegin(char* string, char c) {
 	concatenatedString[length + 1] = '\0';
 	return concatenatedString;
 }
-
 int stringLength(char* p)
 {
-	//printf("the length of %c = ", p);
 	int count = 0;
 	while ((*p) != '\0')
 	{
 		count++;
 		p++;
 	}
-	//printf("%d\n", count);
 	return count;
 }
 int intLength(int number) {
-	//printf("the length of %d = ", number);
 	if (number == 0)
 		return 1;
 	int count = 0;
@@ -46,6 +40,5 @@ int intLength(int number) {
 		number /= 10;
 		count++;
 	}
-	//printf("%d\n", count);
 	return count;
 }
