@@ -9,6 +9,11 @@ char* convertIntToChar(int num)
 char* append(char* string, char c) {
 	int length = stringLength(string);
 	char* concatenatedString = (char*)malloc(length + 2);
+	if (!concatenatedString)
+	{
+		printf("unable to allocate memory.");
+		exit(1);
+	}
 	strcpy(concatenatedString, string);
 	concatenatedString[length] = c;
 	concatenatedString[length + 1] = '\0';
@@ -17,6 +22,11 @@ char* append(char* string, char c) {
 char* appendFromBegin(char* string, char c) {
 	int length = stringLength(string);
 	char* concatenatedString = (char*)malloc(length + 2);
+	if (!concatenatedString)
+	{
+		printf("unable to allocate memory.");
+		exit(1);
+	}
 	concatenatedString[0] = c;
 	strcpy(concatenatedString + 1, string);
 	concatenatedString[length + 1] = '\0';
