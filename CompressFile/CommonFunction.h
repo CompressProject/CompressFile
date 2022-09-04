@@ -5,7 +5,7 @@
 #define LENGTH_CODE 12
 #define LENGTH_READ_CODE 3
 #define PRINT_COMPRESS 
-#define PRINT_DECOMPRESS 
+//#define PRINT_DECOMPRESS 
 #define SIGN 4095
 #include<stdio.h>
 #include<stdlib.h>
