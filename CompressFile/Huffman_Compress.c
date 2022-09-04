@@ -121,7 +121,7 @@ void compressHuffman(char* compressionPath, char* resultPath)
 	FILE* intermediateFile, * decompressFile;
 	int frequencyArray[SIZE] = { 0 };
 	//open the files.
-	fopen_s(&compressHuffmanPrintFile, "compressHuffmanPrintFile.txt", "w");
+	//fopen_s(&compressHuffmanPrintFile, "compressHuffmanPrintFile.txt", "w");
 	fopen_s(&intermediateFile, compressionPath, "rb");
 	fopen_s(&decompressFile, "decompressFile.bin", "wb");
 	char ch = '#';
@@ -300,7 +300,7 @@ int readCodesFromFile(FILE* intermediateFile, FILE* decompressFile, Code** codeA
 	if (res < 1)
 		return res;
 	printf("%x\n", codeChar);
-	fprintf(compressHuffmanPrintFile, "%x\n", codeChar);
+	//fprintf(compressHuffmanPrintFile, "%x\n", codeChar);
 	for (int i = 0; i < (LENGTH_READ_CODE*8)/ LENGTH_CODE_IN_BIT; i++)
 	{
 		code = codeArrayOfAllChar[codeChar & mask]->codeArray;
@@ -318,7 +318,7 @@ int readCodesFromFile(FILE* intermediateFile, FILE* decompressFile, Code** codeA
 		prevCount = 0;
 		//printArray(codeArrayOfAllChar[codeChar & mask]);
 		printf("codeChar&mask= %x\n", codeChar & mask);
-		fprintf(compressHuffmanPrintFile, "codeChar&mask= %x\n",codeChar & mask);
+		//fprintf(compressHuffmanPrintFile, "codeChar&mask= %x\n",codeChar & mask);
 	}
 	return res;
 }
@@ -333,7 +333,7 @@ void writeToDecompressFile(FILE* intermediateFile, FILE* decompressFile, int** c
 	{
 		res=readCodesFromFile(intermediateFile, decompressFile,codeArrayOfAllChar);
 	}
-	fclose(compressHuffmanPrintFile);
+	//fclose(compressHuffmanPrintFile);
 }
 //The main function that builds a Huffman Treeand,
 //write the codes into matrix by traversing

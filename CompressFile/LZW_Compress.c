@@ -21,15 +21,6 @@ void readBinaryFile(char* binaryFilePath) {
 #endif // PRINT_COMPRESS
 	fclose(binaryFile);
 }
-int combineTwoNumbers(codeChar, prevCodeChar)
-{
-	/*101= 110 0101
-	101<<12 = 110 0101 0000 0000 0000
-	 68 =100 0100
-	res= 110 0101 0000 0100 0100*/
-	codeChar <<= LENGTH_CODE;
-	return codeChar | prevCodeChar;
-}
 void compressLZW(char* compressionPath, char* resultPath)
 {
 #pragma region variable assignments
@@ -94,7 +85,7 @@ void compressLZW(char* compressionPath, char* resultPath)
 			//write the code in the binary file.
 			if (count == 2)
 			{
-				combineNum = combineTwoNumbers(codeChar, prevCodeChar);
+				combineNum = combineTwoNumbers(codeChar, prevCodeChar,LENGTH_CODE);
 #ifdef PRINT_COMPRESS
 				printf("combineNum= %d\n", combineNum);
 				fprintf(compressPrintFile, "combineNum= %d\n", combineNum);
@@ -113,7 +104,7 @@ void compressLZW(char* compressionPath, char* resultPath)
 	}
 	if (count == 1)
 	{
-		combineNum= combineTwoNumbers(SIGN, codeChar);
+		combineNum= combineTwoNumbers(SIGN, codeChar,LENGTH_CODE);
 		fwrite(&combineNum, LENGTH_READ_CODE, 1, intermediateFile);
 	}
 #ifdef PRINT_COMPRESS
