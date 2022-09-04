@@ -3,9 +3,10 @@
 #define SIZE_TABLE 4095
 #define MULTIPLIER 17
 #define LENGTH_CODE 12
-#define LENGTH_READ_CODE 3
+#define LENGTH_READ_CODE 3*sizeof(char)
+#define LENGTH_CODE_IN_BIT 3
 #define PRINT_COMPRESS 
-//#define PRINT_DECOMPRESS 
+#define PRINT_DECOMPRESS 
 #define SIGN 4095
 #include<stdio.h>
 #include<stdlib.h>
@@ -13,6 +14,7 @@
 #include <stdbool.h>
 FILE* compressPrintFile;
 FILE* decompressPrintFile;
+FILE* compressHuffmanPrintFile;
 //convert int to char(not by the ascii code!).
 char* convertIntToChar(int);
 //Concatenate a character into a string.
@@ -23,3 +25,5 @@ char* appendFromBegin(char*, char);
 int stringLength(char*);
 //return the length of the number.
 int intLength(int);
+//combine two codes into one variable to insert to the file.
+int combineTwoNumbers(int codeChar, int prevCodeChar, int shiftLengh);
