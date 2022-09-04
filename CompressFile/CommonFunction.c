@@ -52,3 +52,12 @@ int intLength(int number) {
 	}
 	return count;
 }
+int combineTwoNumbers(int codeChar, int prevCodeChar,int shiftLengh)
+{
+	/*101= 110 0101
+	101<<12 = 110 0101 0000 0000 0000
+	 68 =100 0100
+	res= 110 0101 0000 0100 0100*/
+	codeChar <<= shiftLengh;
+	return codeChar | prevCodeChar;
+}

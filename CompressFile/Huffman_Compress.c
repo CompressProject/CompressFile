@@ -23,15 +23,15 @@ void read_Binary_File(FILE* binaryFile) {
 }
 void unCombine(int codeChar, int* code1, int* code2)
 {
-	int mask = 0xF;
-	//for (int k = 0; k < LENGTH_CODE / 3 - 1; k++)
-	//{
-	//	mask <<= 1;
-	//	mask += 1;
-	//}
+	int mask = 1;
+	for (int k = 0; k < LENGTH_CODE - 1; k++)
+	{
+		mask <<= 1;
+		mask += 1;
+	}
 	//takes the right(low) 4 bits.
 	*code1 = codeChar & mask;
-	codeChar >>= LENGTH_CODE / 3;
+	codeChar >>= LENGTH_CODE;
 	//takes the small(high) 4 bits.
 	*code2 = codeChar & mask;
 }
@@ -42,27 +42,27 @@ void buildfrequencyArray(FILE* intermediateFile, int* counter)
 	char codeChar;
 	int code1, code2;
 	//codeChar = fgetc(intermediateFile);
-	fread(&codeChar, sizeof(char), 1, intermediateFile);
+	fread(&codeChar, 3 * sizeof(char), 1, intermediateFile);
 	unCombine(codeChar, &code1, &code2);
 	int convert;
 	while (!feof(intermediateFile))
 	{
-		/*	if ((int)codeChar < '0')
-				counter[codeChar]++;
-			else
-			{
-				convert = (int)codeChar - '0';
-				counter[convert]++;
-			}*/
-			//counter[codeChar]++;
-		counter[code1]++;
-		counter[code2]++;
+		do
+		{
+			counter[code1 % 10]++;
+			code1 /= 10;
+		} while (code1);
+		do
+		{
+			counter[code2 % 10]++;
+			code2 /= 10;
+		} while (code2);
 		fread(&codeChar, sizeof(char), 1, intermediateFile);
 		unCombine(codeChar, &code1, &code2);
 	}
 }
 //Prints the elements of the array.
-void printArray(int* arr)
+void printArray(int* arr,int top)
 {
 	compressPrintFile = fopen("compressPrintFile.txt", "a+");
 	if (!compressPrintFile)
@@ -70,7 +70,7 @@ void printArray(int* arr)
 		printf("unable to open the compressPrintFile file.");
 		exit(1);
 	}
-	for (int i = 0; i < SIZE; i++)
+	for (int i = 0; i < top; i++)
 	{
 		if (arr != NULL && arr[i] >= 0)
 		{
@@ -87,7 +87,7 @@ void printmat(Code** arr)
 {
 	for (int i = 0; i < SIZE; i++)
 	{
-		printArray(arr[i]->codeArray);
+		printArray(arr[i]->codeArray, SIZE);
 	}
 	printf("\n");
 	fprintf(compressPrintFile, "\n");
@@ -142,9 +142,9 @@ void compressHuffman(char* compressionPath, char* resultPath)
 		393315*/
 	buildfrequencyArray(intermediateFile, frequencyArray);
 #ifdef PRINT_COMPRESS
-	printArray(frequencyArray);
+	printArray(frequencyArray,SIZE);
 #endif // PRINT_COMPRESS
-	const char const data[SIZE] = { '0','1','2','3','4','5','6','7','8','9' };
+	int  data[SIZE] = { 0,1,2,3,4,5,6,7,8,9 };
 	//for (int i = 0; i < SIZE; i++)
 	//{
 	//	printf("%d\n", data[i] - '0');
@@ -181,26 +181,26 @@ void writeTreeToDecompressFile(FILE* decompressFile, MinHeapNode* root)
 	if (!root->left && !root->right)
 	{
 		strcpy(str, "11");
-		fwrite(str, sizeof(str)-1, 1, decompressFile);
+		fwrite(str, sizeof(str) - 1, 1, decompressFile);
 		fwrite(&root->data, sizeof(char), 1, decompressFile);
 		return;
 	}
 	if (root->left)
 	{
 		strcpy(str, "01");
-		fwrite(str, sizeof(str)-1, 1, decompressFile);
+		fwrite(str, sizeof(str) - 1, 1, decompressFile);
 		printf("%s: \n", strToPrint);
 	}
 	writeTreeToDecompressFile(decompressFile, root->left);
 	if (root->right)
 	{
 		strcpy(str, "10");
-		fwrite(str, sizeof(str)-1, 1, decompressFile);
+		fwrite(str, sizeof(str) - 1, 1, decompressFile);
 	}
 	writeTreeToDecompressFile(decompressFile, root->right);
 }
 // The main function that builds Huffman tree.
-MinHeapNode* buildHuffmanTree(char data[], int freq[], int size)
+MinHeapNode* buildHuffmanTree(int data[], int freq[], int size)
 {
 	MinHeapNode* left, * right, * top;
 	// Step 1: Create a min heap of capacity
@@ -233,7 +233,7 @@ MinHeapNode* buildHuffmanTree(char data[], int freq[], int size)
 }
 // write the huffman codes into matrix from the root of Huffman Tree.
 // It uses arr[] to store codes.
-void createCodes(Code** codeArrayOfAllChar, MinHeapNode* root, int codeArray[], int top,int count)
+void createCodes(Code** codeArrayOfAllChar, MinHeapNode* root, int codeArray[], int top, int count)
 {
 	// Assign 0 to left edge and recur
 	if (root->left)
@@ -254,22 +254,23 @@ void createCodes(Code** codeArrayOfAllChar, MinHeapNode* root, int codeArray[], 
 	// characters,enter its code from arr[] into the matrix.
 	if (isLeaf(root))
 	{
-		printf("%c: ", root->data);
+		printf("%d: ", root->data);
 		//The array at its character position is equal to its code.
 		int* arr = (int*)malloc(SIZE * sizeof(int));
+		int i = 0;
 		if (!arr)
 		{
 			printf("unable to allocate memory.");
 			exit(1);
 		}
 		initArr(arr);
-		for (int i = 0; i < SIZE; i++)
+		for (int i = 0; i < top; i++)
 		{
-			if (codeArray[i] >= 0)
+			//if (codeArray[i] >= 0)
 				arr[i] = codeArray[i];
 		}
-		codeArrayOfAllChar[root->data - '0']->codeArray = arr;
-		codeArrayOfAllChar[root->data - '0']->count = count;
+		codeArrayOfAllChar[root->data]->codeArray = arr;
+		codeArrayOfAllChar[root->data]->count = count;
 		count = 0;
 #ifdef PRINT_COMPRESS
 		compressPrintFile = fopen("compressPrintFile.txt", "a+");
@@ -280,10 +281,10 @@ void createCodes(Code** codeArrayOfAllChar, MinHeapNode* root, int codeArray[], 
 		}
 		printf("arr:__________________\n");
 		fprintf(compressPrintFile, "arr:__________________\n");
-		printArray(arr);
-		printf("%d : codeArrayOfAllChar[root->data - '0']:__________________\n", root->data - '0');
-		fprintf(compressPrintFile, "%d : codeArrayOfAllChar[root->data - '0']:__________________\n", root->data - '0');
-		printArray(codeArrayOfAllChar[root->data - '0']->codeArray);
+		printArray(arr,top);
+		printf("%d : codeArrayOfAllChar[root->data]:__________________\n", root->data );
+		fprintf(compressPrintFile, "%d : codeArrayOfAllChar[root->data]:__________________\n", root->data);
+		printArray(codeArrayOfAllChar[root->data]->codeArray,top);
 		printf("codeArrayOfAllChar:__________________\n");
 		fprintf(compressPrintFile, "codeArrayOfAllChar:__________________\n");
 		printmat(codeArrayOfAllChar);
@@ -293,32 +294,34 @@ void createCodes(Code** codeArrayOfAllChar, MinHeapNode* root, int codeArray[], 
 }
 int readCodesFromFile(FILE* intermediateFile, FILE* decompressFile, Code** codeArrayOfAllChar)
 {
-	int codeChar,currentCount=0,prevCount=0;
-	int mask=0xF,res;
-	long long codeCombine=0,code;
-	res=fread(&codeChar, LENGTH_READ_CODE, 1, intermediateFile);
+	int  currentCount = 0, prevCount = 0;
+	unsigned int codeChar;
+	int mask = 0xF, res;
+	long long codeCombine = 0, code;
+	res = fread(&codeChar, LENGTH_READ_CODE, 1, intermediateFile);
 	if (res < 1)
 		return res;
 	printf("%x\n", codeChar);
 	fprintf(compressHuffmanPrintFile, "%x\n", codeChar);
-	for (int i = 0; i < (LENGTH_READ_CODE*8)/ LENGTH_CODE_IN_BIT; i++)
+	while (codeChar)
 	{
-		code = codeArrayOfAllChar[codeChar & mask]->codeArray;
-		currentCount = codeArrayOfAllChar[codeChar & mask]->count;
+		code = codeArrayOfAllChar[codeChar % 10]->codeArray;
+		currentCount = codeArrayOfAllChar[codeChar % 10]->count;
 		prevCount += currentCount;
-		if (prevCount % 8!=0)
+		if (prevCount % 8 != 0)
 		{
-			codeCombine = combineTwoNumbers(code, codeCombine, currentCount);
-			codeChar >>= LENGTH_CODE_IN_BIT;
+			codeCombine = combineTwoNumbers(code, codeCombine, prevCount);
+			codeChar /= 10;
+			
 			continue;
 		}
-		codeChar >>= LENGTH_CODE_IN_BIT;
-		codeCombine = combineTwoNumbers(code, codeCombine, currentCount);
-		fwrite(&codeCombine, prevCount/8, 1, decompressFile);
+		/*codeChar /= 10;
+		codeCombine = combineTwoNumbers(code, codeCombine, currentCount);*/
+		fwrite(&codeCombine, prevCount / 8, 1, decompressFile);
 		prevCount = 0;
 		//printArray(codeArrayOfAllChar[codeChar & mask]);
-		printf("codeChar&mask= %x\n", codeChar & mask);
-		fprintf(compressHuffmanPrintFile, "codeChar&mask= %x\n",codeChar & mask);
+		printf("codeChar&mask= %d\n", codeChar % 10);
+		fprintf(compressHuffmanPrintFile, "codeChar&mask= %x\n", codeChar & mask);
 	}
 	return res;
 }
@@ -331,19 +334,20 @@ void writeToDecompressFile(FILE* intermediateFile, FILE* decompressFile, int** c
 	//fwrite("$", sizeof(char), 1, decompressFile);
 	while (res)
 	{
-		res=readCodesFromFile(intermediateFile, decompressFile,codeArrayOfAllChar);
+		res = readCodesFromFile(intermediateFile, decompressFile, codeArrayOfAllChar);
 	}
 	fclose(compressHuffmanPrintFile);
 }
 //The main function that builds a Huffman Treeand,
 //write the codes into matrix by traversing
 //the built Huffman Tree.
-void HuffmanCodes(char* data, FILE* intermediateFile, FILE* decompressFile, int frequency[], int size)
+//0 9
+void HuffmanCodes(int* data, FILE* intermediateFile, FILE* decompressFile, int frequency[], int size)
 {
 	// Construct Huffman Tree
 	MinHeapNode* root = buildHuffmanTree(data, frequency, size);
 	//Writing the contents of the tree into the file.
-	int sizeOfTree=0;
+	int sizeOfTree = 0;
 	fseek(decompressFile, 1, SEEK_SET);
 	writeTreeToDecompressFile(decompressFile, root);
 	//check the size of the tree.
@@ -353,15 +357,15 @@ void HuffmanCodes(char* data, FILE* intermediateFile, FILE* decompressFile, int 
 	fseek(decompressFile, 0, SEEK_SET);
 	fwrite(&sizeOfTree, 1, 1, decompressFile);
 	//return the mark to the end of the tree.
-	fseek(decompressFile, sizeOfTree+2, SEEK_SET);
+	fseek(decompressFile, sizeOfTree + 2, SEEK_SET);
 	//fwrite("$", sizeof(char), 1, decompressFile);
 	//fseek(decompressFile, 0, SEEK_SET);
 	//read_Binary_File(decompressFile);
 	//readFile(decompressFile);
-	
+
 	// Write Huffman codes into matrix using
 	// the Huffman tree built above
-	int codeArray[SIZE], top = 0,count=0;
+	int codeArray[SIZE], top = 0, count = 0;
 	//Saves all characters and their codes.
 	//int** codeArrayOfAllChar = (int**)malloc(sizeof(int*) * SIZE);
 	Code** codeArrayOfAllChar = (Code**)malloc(sizeof(Code*) * SIZE);
@@ -371,7 +375,7 @@ void HuffmanCodes(char* data, FILE* intermediateFile, FILE* decompressFile, int 
 		exit(1);
 	}
 	initMat(codeArrayOfAllChar);
-	createCodes(codeArrayOfAllChar, root, codeArray, top,count);
+	createCodes(codeArrayOfAllChar, root, codeArray, top, count);
 	/*printf("codeArrayOfAllChar:__________________\n");
 	printArray(codeArrayOfAllChar[0]);
 	printmat(codeArrayOfAllChar);*/

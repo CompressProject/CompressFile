@@ -2,7 +2,7 @@
 #pragma once
 #include "DataStructuresHuffman.h";
 //#include "CommonFunction.h"
-#define SIZE 15
+#define SIZE 10
 void buildfrequencyArray(FILE* intermediateFile, int* counter);
 void createCodes(int** codeArrayOfAllChar, MinHeapNode* root, int codeArray[], int top);
 void writeToCodeArray(int** codeArrayOfAllChar, int codeArray[], int n);

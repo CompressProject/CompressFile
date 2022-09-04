@@ -2,7 +2,7 @@
 #include "DataStructuresHuffman.h"
 void decompressHuffman(char* decompressionPath)
 {
-	int res = 1, count = 0;
+	int res = 1, bitCount = 0;
 	FILE* decompressionFile = fopen(decompressionPath, "rb");
 	FILE* intermediateFile = fopen("intermediate.bin", "wb");
 	if (!decompressionFile || !intermediateFile)
@@ -13,8 +13,8 @@ void decompressHuffman(char* decompressionPath)
 	fseek(decompressionFile, 1, SEEK_SET);
 	MinHeapNode* root = buildCodeTree(decompressionFile);
 	MinHeapNode* currentNode = root;
-	char nextCharacter,prevData=' ';
-	int combineData;
+	char nextCharacter, prevData = ' ';
+	int combineData=0,shiftLength;
 	if (root == NULL || isLeaf(currentNode)) {
 		printf("\nERROR!!\n THE TREE ISNT WORKING!\n");
 		return;
@@ -26,21 +26,21 @@ void decompressHuffman(char* decompressionPath)
 		res = fread(&nextCharacter, sizeof(char), 1, decompressionFile);
 		for (int i = 0; i < (LENGTH_READ_CODE * 8) / LENGTH_CODE_IN_BIT; i++)
 		{
+			bitCount++;
 			if (isLeaf(currentNode))
 			{
-				count++;
-			printf("nextCharacter&1= %d\n ", nextCharacter&1);
-			printf("currentNode->data%c \n", currentNode->data);
-			printf("prevData%c \n", prevData);
-				if (count == 2)
-				{
-				combineData =combineTwoNumbers(currentNode->data-'0', prevData-'0', 4);
+				printf("nextCharacter&1= %d\n ", nextCharacter & 1);
+				printf("currentNode->data%c \n", currentNode->data);
+				printf("prevData%c \n", prevData);
+				shiftLength = currentNode->data - '0' > 7 ? 4 : 3;
+				combineData = combineTwoNumbers(currentNode->data - '0', combineData, shiftLength);
 				printf("combineData= %d\n ", combineData);
-				//write to the intermediateFile file.
-					fwrite(&combineData, sizeof(char), 1, intermediateFile);
-					count = 0;
+				if (bitCount == LENGTH_CODE * 2)
+				{
+					//write to the intermediateFile file.
+					fwrite(&combineData, LENGTH_READ_CODE, 1, intermediateFile);
+					bitCount = 0;
 				}
-				prevData = currentNode->data;
 				//fputc(currentNode->data, intermediateFile);
 				printf("currentNode->data= %c \n", currentNode->data);
 				currentNode = root;
